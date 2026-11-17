@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/danchily2/devin-factory/schemas/state.json",
+  "title": "Factory state",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "issue": {
+      "type": "string",
+      "pattern": "^(MANM|EMPM)-[0-9]+$"
+    },
+    "foreman": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "triage",
+        "spec",
+        "spec-review",
+        "build",
+        "review",
+        "human-review",
+        "blocked",
+        "done",
+        "failed"
+      ]
+    },
+    "size": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "S",
+            "M",
+            "L"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Visma-Manager/vmm",
+          "Visma-Mobile-Employee/scarlet-team-c",
+          "Visma-Mobile-Employee/scarlet-team-c-android"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "children": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "triage": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spec": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "triage",
+        "spec",
+        "build",
+        "review"
+      ]
+    },
+    "spec_doc": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pr": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Visma-Manager/vmm": {
+          "type": "string",
+          "format": "uri"
+        },
+        "Visma-Mobile-Employee/scarlet-team-c": {
+          "type": "string",
+          "format": "uri"
+        },
+        "Visma-Mobile-Employee/scarlet-team-c-android": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "review_rounds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "last_signal": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "answered",
+                "revise",
+                "stop"
+              ]
+            },
+            "event_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "received_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "name",
+            "event_id",
+            "received_at"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "version",
+    "issue",
+    "foreman",
+    "stage",
+    "size",
+    "repos",
+    "children",
+    "spec_doc",
+    "pr",
+    "review_rounds",
+    "last_signal",
+    "updated_at"
+  ]
+}

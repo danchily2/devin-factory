@@ -1,0 +1,50 @@
+{
+  "name": "Factory A3: merged PR relay",
+  "enabled": false,
+  "description": "DRAFT: validate against the current devin_automation_manage schema before deployment.",
+  "placeholders": {
+    "integration_id": "PLACEHOLDER: connected integration id if required by the live API",
+    "event_binding": "PLACEHOLDER: replace EVENT_JSON with the host event-template expression"
+  },
+  "trigger": {
+    "type": "event",
+    "event_type": "github:pull_request",
+    "conditions": [
+      {
+        "field": "action",
+        "operator": "equals",
+        "value": "closed"
+      },
+      {
+        "field": "pull_request.merged",
+        "operator": "equals",
+        "value": true
+      },
+      {
+        "field": "pull_request.head.ref",
+        "operator": "starts_with",
+        "value": "factory/"
+      }
+    ]
+  },
+  "action": {
+    "type": "message_session",
+    "auto_create": true,
+    "prompt": "@skills:factory-relay\nDispatcher mode: handle this event independently, then return to waiting for the next message; do not end this session. Re-read Linear for every event; never cache issue state or foreman handles. Verify actual merge and recorded PR/issue association; notify/resume the foreman to check all PRs before marking done. Only pilot-team issues are eligible.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Deduplicate via the state comment."
+  },
+  "session": {
+    "bypass_approval": true
+  },
+  "session_settings": {
+    "devin_mode": "lite"
+  },
+  "limits": {
+    "max_acu_limit": 5
+  },
+  "net_policy": {
+    "allow": [
+      "git-manager.devin.ai",
+      "PLACEHOLDER: required Linear/GitHub endpoints and approved repository build domains"
+    ]
+  }
+}

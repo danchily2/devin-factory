@@ -1,0 +1,43 @@
+{
+  "name": "Factory A1: intake",
+  "enabled": false,
+  "description": "DRAFT: validate against the current devin_automation_manage schema before deployment.",
+  "placeholders": {
+    "integration_id": "PLACEHOLDER: connected integration id if required by the live API",
+    "event_binding": "PLACEHOLDER: replace EVENT_JSON with the host event-template expression"
+  },
+  "trigger": {
+    "type": "event",
+    "event_type": "linear:label_added",
+    "conditions": [
+      {
+        "field": "addedLabel.name",
+        "operator": "equals",
+        "value": "intake"
+      },
+      {
+        "field": "data.teamId",
+        "operator": "in",
+        "value": [
+          "0bab2835-3ed3-4089-bed2-129d6febe92c"
+        ]
+      }
+    ]
+  },
+  "action": {
+    "type": "start_session",
+    "session": {
+      "prompt": "@skills:factory-foreman\nStart/resume the one foreman for the event issue. Verify label group Factory; intake is human opt-in. Tag session factory and factory:<ISSUE-KEY>. Do not create a duplicate live owner.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Re-read source data; deduplicate via the state comment.",
+      "bypass_approval": true
+    },
+    "limits": {
+      "max_acu_limit": 150
+    },
+    "net_policy": {
+      "allow": [
+        "git-manager.devin.ai",
+        "PLACEHOLDER: required Linear/GitHub endpoints and approved repository build domains"
+      ]
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/danchily2/devin-factory/schemas/build.json",
+  "title": "Factory build",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "blocked",
+        "failed"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repo": {
+            "type": "string",
+            "enum": [
+              "Visma-Manager/vmm",
+              "Visma-Mobile-Employee/scarlet-team-c",
+              "Visma-Mobile-Employee/scarlet-team-c-android"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "head_sha": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "merged",
+              "closed"
+            ]
+          }
+        },
+        "required": [
+          "repo",
+          "url",
+          "head_sha",
+          "status"
+        ]
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repo": {
+            "type": "string",
+            "enum": [
+              "Visma-Manager/vmm",
+              "Visma-Mobile-Employee/scarlet-team-c",
+              "Visma-Mobile-Employee/scarlet-team-c-android"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "pending",
+              "unavailable"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "repo",
+          "command",
+          "result",
+          "evidence"
+        ]
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "outcome",
+    "summary",
+    "prs",
+    "checks",
+    "evidence",
+    "blockers"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "ready"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "prs": {
+            "minItems": 1
+          },
+          "checks": {
+            "minItems": 1
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "blocked",
+              "failed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blockers": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

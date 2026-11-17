@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/danchily2/devin-factory/schemas/spec.json",
+  "title": "Factory spec",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "blocked",
+        "failed"
+      ]
+    },
+    "doc_url": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "outcome",
+    "doc_url",
+    "summary",
+    "open_questions"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "ready"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "doc_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "open_questions": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "blocked",
+              "failed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "open_questions": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}
