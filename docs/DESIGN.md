@@ -80,16 +80,18 @@ A closed-unmerged PR is not done. Multi-repo runs become done only after every r
 
 ## Waking and recovery
 
-- A1: linear:label_added intake, filtered to pilot team ids, starts/resumes foreman.
-- A2: linear:label_added approve/answered/revise/stop starts Lite relay; it messages the live owner or
-  starts a fresh foreman only if the owner is verified gone/finished.
-- A3: github:pull_request closed + merged + factory/ head starts Lite relay. Resolve the recorded issue;
-  foreman verifies GitHub and all PRs before done/Done.
+- A1: linear:label_added intake, filtered to MANM, starts/resumes foreman.
+- A2: MANM linear:label_added approve/answered/revise/stop messages its standing Lite dispatcher;
+  it messages the live owner or starts a fresh foreman only if the owner is verified gone/finished.
+- A3: github:pull_request closed + merged + factory/ head messages its standing Lite dispatcher.
+  Resolve the recorded issue; foreman verifies GitHub and all PRs before done/Done.
 - A4: hourly Lite watchdog scans all nonterminal Factory labels; state older than six hours is nudged
   via relay semantics. Unrelated issue edits do not reset the state clock.
 - Waiting foreman arms a two-hour devin_reminder_manage reminder as fallback. Child creation uses
   notify_on_response=true, so child results wake it without polling.
 
+A2/A3 use message_session with auto_create: true, one dispatcher per automation, not a new relay per event.
+Dispatchers re-read Linear per event and return to waiting.
 Relays never consume signals; only the foreman records a receipt, removes the label and acts.
 New owners recover child outputs, specs, PRs and review count instead of starting over.
 Partial writes reconcile from state; ambiguous side effects are inspected before retry. A waiting owner is live.

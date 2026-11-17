@@ -19,8 +19,7 @@
         "field": "data.teamId",
         "operator": "in",
         "value": [
-          "0bab2835-3ed3-4089-bed2-129d6febe92c",
-          "e00b3530-814b-434d-8b72-e87c05c32b4f"
+          "0bab2835-3ed3-4089-bed2-129d6febe92c"
         ]
       }
     ]

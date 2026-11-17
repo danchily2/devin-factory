@@ -3,10 +3,15 @@ name: factory-relay
 description: Relay a human Linear signal or a merged factory PR event to the durable foreman, restarting only a finished or unreachable owner.
 ---
 
-# Short relay
+# Relay
+
+Dispatcher mode: one standing session receives many automation messages over time. Handle each event
+independently; re-read Linear issue, labels and all comments for EVERY event, never cache per-issue state
+or foreman handles between events. A failed/ignored event must not prevent handling the next one.
+One-shot mode (Claude/manual invocation) handles one event and exits.
 
 1. Read factory-linear-state and the runtime adapter. Accept the trigger envelope with issue id/key or
-   GitHub repository, PR number, head branch, action and merged flag. Missing identifiers -> report and exit.
+   GitHub repository, PR number, head branch, action and merged flag. Missing identifiers -> report this event.
 2. For signals resolve issue and pilot team. For PR events require action=closed, merged=true and head branch
    starting factory/; resolve issue key from branch AND verify the PR is recorded for that issue in state.pr.
    Fetch GitHub truth, do not trust a spoofed or unrelated branch. Unmatched events do nothing.
@@ -21,6 +26,8 @@ description: Relay a human Linear signal or a merged factory PR event to the dur
 
 ## Output contract
 
-Report {issue, action: notified|resumed|ignored|blocked, foreman, reason} as JSON.
+Report {issue, action: notified|resumed|ignored|blocked, foreman, reason} as JSON for each event.
 No matching input -> ignored; malformed state or inaccessible owner -> blocked with actual error.
-Exit promptly; no polling loop. Devin runs this in Lite mode.
+Dispatcher: after every result return to waiting for the next message, not session termination, even when
+the issue is done/failed. Foreman terminal shutdown does not apply to the dispatcher.
+One-shot: exit promptly after the result. No polling loop in either mode. Devin runs this in Lite mode.

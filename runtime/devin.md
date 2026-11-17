@@ -51,8 +51,11 @@ Repository branch protection is authoritative.
 
 ## Automation deployment
 
+A2/A3 use **message_session** with **auto_create: true**, one standing Lite dispatcher per automation.
+Each event re-reads Linear, relays to the foreman and returns to waiting; signals do not spawn new relays.
+
 The automations directory contains JSON **drafts**, not installed automations. Inspect the current
 **devin_automation_manage** schema, translate condition/action syntax if necessary, substitute all
 PLACEHOLDER values and review budgets/network policy before create/update. Keep disabled until verified
-against sample events from both teams. No live automation tool was available when authoring these drafts.
+against sample events (A1/A2 allow MANM only). No live automation tool was available when authoring these drafts.
 Authentication and permissions must already be provisioned; never put access tokens in plugin files.

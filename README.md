@@ -74,7 +74,7 @@ Do not manually duplicate/delete it. Full shape: [schemas/state.json](schemas/st
 ## Start and steer
 
 1. Add **Factory › intake** to a MANM/EMPM issue with a clear outcome and acceptance criteria.
-   A1 starts a foreman (or invoke the foreman manually until automations are deployed).
+   A1 starts a foreman for MANM (invoke it manually for EMPM or until automations are deployed).
 2. Triage chooses repositories, size S/M/L and whether a spec is needed. Only S with needs_spec=false
    skips spec. Questions cause blocked; answer in a comment then add **Factory signal › answered**.
 3. A spec is a **Linear Document attached to the issue**, never a spec PR.
@@ -114,11 +114,13 @@ Exact commands/required checks are discovered from each target repo, not guessed
 
 | Draft | Trigger | Session |
 | --- | --- | --- |
-| A1 | linear:label_added intake, MANM/EMPM IDs | foreman |
-| A2 | linear:label_added approve/answered/revise/stop, pilot IDs | Lite relay |
-| A3 | github:pull_request closed+merged, head begins factory/ | Lite relay |
+| A1 | linear:label_added intake, MANM only | foreman |
+| A2 | linear:label_added approve/answered/revise/stop, MANM only | standing Lite dispatcher |
+| A3 | github:pull_request closed+merged, head begins factory/ | standing Lite dispatcher |
 | A4 | hourly UTC, nonterminal Factory state stale >6h | Lite watchdog |
 
+A2/A3 use message_session with auto_create: true, one dispatcher per automation, re-reading Linear for
+each event and returning to waiting. EMPM remains supported by skills but is not opted into A1/A2 drafts.
 Relays message the owner from the state comment; only a verified gone/finished owner is replaced with
 a fresh foreman that resumes state. Waiting is not dead. The foreman also arms a two-hour reminder
 while waiting on a human, and children notify their parent on response.

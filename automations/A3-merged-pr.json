@@ -28,22 +28,23 @@
     ]
   },
   "action": {
-    "type": "start_session",
-    "session": {
-      "prompt": "@skills:factory-relay\nVerify actual merge and recorded PR/issue association; notify/resume the foreman to check all PRs before marking done. Only pilot-team issues are eligible.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Re-read source data; deduplicate via the state comment.",
-      "bypass_approval": true
-    },
-    "session_settings": {
-      "devin_mode": "lite"
-    },
-    "limits": {
-      "max_acu_limit": 5
-    },
-    "net_policy": {
-      "allow": [
-        "git-manager.devin.ai",
-        "PLACEHOLDER: required Linear/GitHub endpoints and approved repository build domains"
-      ]
-    }
+    "type": "message_session",
+    "auto_create": true,
+    "prompt": "@skills:factory-relay\nDispatcher mode: handle this event independently, then return to waiting for the next message; do not end this session. Re-read Linear for every event; never cache issue state or foreman handles. Verify actual merge and recorded PR/issue association; notify/resume the foreman to check all PRs before marking done. Only pilot-team issues are eligible.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Deduplicate via the state comment."
+  },
+  "session": {
+    "bypass_approval": true
+  },
+  "session_settings": {
+    "devin_mode": "lite"
+  },
+  "limits": {
+    "max_acu_limit": 5
+  },
+  "net_policy": {
+    "allow": [
+      "git-manager.devin.ai",
+      "PLACEHOLDER: required Linear/GitHub endpoints and approved repository build domains"
+    ]
   }
 }

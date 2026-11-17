@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- Run A2/A3 relays as standing dispatchers via message_session/auto_create; restrict A1/A2 drafts to MANM.
 - End the foreman's own session after persisted done/failed state, cleanup and a final summary comment.
 - Add durable Linear foreman, relay and watchdog skills.
 - Add triage, Linear-document spec, build and independent review stages.
