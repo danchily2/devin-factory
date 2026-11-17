@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/danchily2/devin-factory/schemas/review.json",
+  "title": "Factory review",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "revise",
+        "human"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewed_heads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repo": {
+            "type": "string",
+            "enum": [
+              "Visma-Manager/vmm",
+              "Visma-Mobile-Employee/scarlet-team-c",
+              "Visma-Mobile-Employee/scarlet-team-c-android"
+            ]
+          },
+          "sha": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "repo",
+          "sha"
+        ]
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "blocker",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "repo": {
+            "type": "string",
+            "enum": [
+              "Visma-Manager/vmm",
+              "Visma-Mobile-Employee/scarlet-team-c",
+              "Visma-Mobile-Employee/scarlet-team-c-android"
+            ]
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "impact": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fix": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "severity",
+          "repo",
+          "location",
+          "evidence",
+          "impact",
+          "fix"
+        ]
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repo": {
+            "type": "string",
+            "enum": [
+              "Visma-Manager/vmm",
+              "Visma-Mobile-Employee/scarlet-team-c",
+              "Visma-Mobile-Employee/scarlet-team-c-android"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "pending",
+              "unavailable"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "repo",
+          "command",
+          "result",
+          "evidence"
+        ]
+      }
+    }
+  },
+  "required": [
+    "verdict",
+    "summary",
+    "reviewed_heads",
+    "findings",
+    "checks"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "accept"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reviewed_heads": {
+            "minItems": 1
+          },
+          "checks": {
+            "minItems": 1
+          },
+          "findings": {
+            "not": {
+              "contains": {
+                "properties": {
+                  "severity": {
+                    "enum": [
+                      "blocker",
+                      "high"
+                    ]
+                  }
+                },
+                "required": [
+                  "severity"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

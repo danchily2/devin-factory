@@ -1,0 +1,52 @@
+{
+  "name": "Factory A2: human signal relay",
+  "enabled": false,
+  "description": "DRAFT: validate against the current devin_automation_manage schema before deployment.",
+  "placeholders": {
+    "integration_id": "PLACEHOLDER: connected integration id if required by the live API",
+    "event_binding": "PLACEHOLDER: replace EVENT_JSON with the host event-template expression"
+  },
+  "trigger": {
+    "type": "event",
+    "event_type": "linear:label_added",
+    "conditions": [
+      {
+        "field": "addedLabel.name",
+        "operator": "in",
+        "value": [
+          "approve",
+          "answered",
+          "revise",
+          "stop"
+        ]
+      },
+      {
+        "field": "data.teamId",
+        "operator": "in",
+        "value": [
+          "0bab2835-3ed3-4089-bed2-129d6febe92c",
+          "e00b3530-814b-434d-8b72-e87c05c32b4f"
+        ]
+      }
+    ]
+  },
+  "action": {
+    "type": "start_session",
+    "session": {
+      "prompt": "@skills:factory-relay\nVerify the added label belongs to Factory signal and was added by a human. Read the state comment and message its foreman; only resume a verified gone/finished owner. Do not remove the signal.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Re-read source data; deduplicate via the state comment.",
+      "bypass_approval": true
+    },
+    "session_settings": {
+      "devin_mode": "lite"
+    },
+    "limits": {
+      "max_acu_limit": 5
+    },
+    "net_policy": {
+      "allow": [
+        "git-manager.devin.ai",
+        "PLACEHOLDER: required Linear/GitHub endpoints and approved repository build domains"
+      ]
+    }
+  }
+}

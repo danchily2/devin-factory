@@ -1,0 +1,16 @@
+{
+  "name": "devin-factory",
+  "version": "0.1.0",
+  "description": "A Linear-driven software factory with a durable foreman and isolated stage agents for Devin and Claude Code.",
+  "author": {
+    "name": "Dan-Mihai Cuc",
+    "email": "dan-mihai.cuc@visma.com"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "linear",
+    "factory",
+    "devin",
+    "orchestration"
+  ]
+}
