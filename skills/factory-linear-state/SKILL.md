@@ -31,8 +31,9 @@ An externally Canceled or Duplicate issue must not be built or merged; ask for h
 
 Use get_issue plus **all pages** of list_comments. Locate the one body beginning exactly
 `<!-- factory-state -->`. Create it only if none exists; otherwise update with save_comment **with its id**.
-Multiple matching comments, invalid JSON or unsupported versions are a blocking integrity error:
-report to a human; do not guess or overwrite. The body is the marker then a fenced JSON block, e.g.:
+Foremen resolve multiple matching comments with the claim tie-break below; relays/watchdog block and report.
+Invalid JSON or unsupported versions are a blocking integrity error: report to a human; do not guess or
+overwrite. The body is the marker then a fenced JSON block, e.g.:
 
 <!-- factory-state -->
 ```json
@@ -59,6 +60,16 @@ last_signal is null or {name, event_id, received_at}; event_id may be null if un
 updated_at is UTC RFC3339. Never store secrets or full tool output here.
 
 ## Transition protocol
+
+After creating a state comment, re-read all comment pages BEFORE posting anything else or dispatching children.
+Apply the same claim tie-break when resuming and before every side effect: the earliest-created state comment
+wins (sort by createdAt ascending, then comment id ascending for equal timestamps). Track the comment id
+you created or resumed; never switch comments to evade a losing claim. If your state comment
+is not the earliest, delete only your own state comment, cancel only children you started, cancel your own
+reminders, post nothing else and end your own session. Never mark the issue failed or touch the winner's
+state, labels or children. Devin uses the supported end/terminate operation; Claude finishes silently.
+The winner never deletes another foreman's comment; wait for losing claims to clean up before dispatch.
+Unknown comment ownership or a duplicate that cannot self-clean requires human resolution, not extra children.
 
 Only the current foreman writes state. Before any side effect re-read ownership, stage and signals.
 If another live foreman owns it, hand off and exit. A fresh foreman may claim only after the old owner

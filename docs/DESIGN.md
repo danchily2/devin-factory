@@ -85,8 +85,8 @@ A closed-unmerged PR is not done. Multi-repo runs become done only after every r
   it messages the live owner or starts a fresh foreman only if the owner is verified gone/finished.
 - A3: github:pull_request closed + merged + factory/ head messages its standing Lite dispatcher.
   Resolve the recorded issue; foreman verifies GitHub and all PRs before done/Done.
-- A4: hourly Lite watchdog scans all nonterminal Factory labels; state older than six hours is nudged
-  via relay semantics. Unrelated issue edits do not reset the state clock.
+- A4: hourly Lite watchdog skips intake/missing state; recovery requires exactly one valid state older
+  than six hours and a verified finished/unreachable owner. It never nudges live owners and ends after reporting.
 - Waiting foreman arms a two-hour devin_reminder_manage reminder as fallback. Child creation uses
   notify_on_response=true, so child results wake it without polling.
 

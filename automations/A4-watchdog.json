@@ -14,7 +14,7 @@
   "action": {
     "type": "start_session",
     "session": {
-      "prompt": "@skills:factory-watchdog\nScan both pilot teams for nonterminal Factory labels and state updated_at older than 6 hours. Paginate, recheck ownership, and nudge/resume through relay semantics; never replace a live waiting owner.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Re-read source data; deduplicate via the state comment.",
+      "prompt": "@skills:factory-watchdog\nScan both pilot teams; always skip intake and issues with no state comment. Recover only with exactly one valid nonterminal state comment, updated_at older than 6 hours, and an owner verified finished/unreachable. Recheck all gates before relay recovery; skip live owners without nudging. After reporting, end this one-shot session.\nTrigger envelope: PLACEHOLDER_EVENT_JSON. Load runtime/devin.md. Re-read source data; deduplicate via the state comment.",
       "bypass_approval": true
     },
     "session_settings": {

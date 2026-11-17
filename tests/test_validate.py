@@ -164,5 +164,46 @@ class ValidateTests(unittest.TestCase):
         self.assertIn("Validation failed:", output.getvalue())
 
 
+class SkillPolicyTests(unittest.TestCase):
+    def skill_text(self, name):
+        path = MODULE_PATH.parents[1] / "skills" / name / "SKILL.md"
+        return " ".join(path.read_text(encoding="utf-8").split())
+
+    def test_watchdog_excludes_intake_and_missing_state(self):
+        text = self.skill_text("factory-watchdog")
+        self.assertIn("Always skip Factory › intake, even with state; A1 owns intake.", text)
+        self.assertIn("Skip issues with no state comment: missing state is not stale.", text)
+        self.assertIn("Never start or resume either case.", text)
+
+    def test_watchdog_requires_stale_single_state_and_finished_owner(self):
+        text = self.skill_text("factory-watchdog")
+        self.assertIn("Act only when exactly one valid state comment exists", text)
+        self.assertIn("updated_at is strictly more than six hours old", text)
+        self.assertIn("AND its owner is verified finished/unreachable", text)
+        self.assertIn("skip live owners without nudging them", text)
+        self.assertIn("immediately before recovery; skip if any gate no longer holds", text)
+
+    def test_foreman_and_state_define_losing_claim_cleanup(self):
+        for name in ("factory-foreman", "factory-linear-state"):
+            with self.subTest(skill=name):
+                text = self.skill_text(name)
+                self.assertIn("earliest-created state comment wins", text)
+                self.assertIn("comment id ascending", text)
+                self.assertIn("re-read all comment pages", text)
+                self.assertIn("delete only your own state comment", text)
+                self.assertIn("cancel only children you started", text)
+                self.assertIn("post nothing else and end your own session", text)
+                self.assertIn("resume", text)
+
+    def test_one_shot_helpers_end_but_dispatcher_waits(self):
+        watchdog = self.skill_text("factory-watchdog")
+        relay = self.skill_text("factory-relay")
+        self.assertIn("end your own one-shot session", watchdog)
+        self.assertIn("One-shot: after reporting, end your own session", relay)
+        self.assertIn("Dispatcher: after every result return to waiting", relay)
+        for text in (watchdog, relay):
+            self.assertIn("devin_session_interact or host equivalent", text)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -30,4 +30,6 @@ Report {issue, action: notified|resumed|ignored|blocked, foreman, reason} as JSO
 No matching input -> ignored; malformed state or inaccessible owner -> blocked with actual error.
 Dispatcher: after every result return to waiting for the next message, not session termination, even when
 the issue is done/failed. Foreman terminal shutdown does not apply to the dispatcher.
-One-shot: exit promptly after the result. No polling loop in either mode. Devin runs this in Lite mode.
+One-shot: after reporting, end your own session via the supported end/terminate operation using
+devin_session_interact or host equivalent; Claude finishes with a final report. Do not wait idle.
+No polling loop in either mode. Devin runs this in Lite mode.
