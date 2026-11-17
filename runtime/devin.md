@@ -23,6 +23,11 @@ Use native Linear and GitHub integrations, not this repo's Claude .mcp.json.
 - While awaiting humans use **devin_reminder_manage** to schedule a wake-up in two hours with issue key
   and state comment id; re-arm after re-reading state if still waiting. Cancel the reminder on progression,
   stop or completion. Prefer response notifications over timers for child completion.
+- On done/failed (including stop), first persist terminal state, close/cancel children and cancel reminders.
+  Post a final short summary comment, then explicitly end the foreman's OWN session using the supported
+  end/terminate operation via **devin_session_interact** or host equivalent. Inspect its live schema;
+  do not invent an operation or merely wait idle. Never end before terminal persistence succeeds.
+  Later relay/intake events on done/failed are no-ops unless a human authorizes a new run.
 
 Tool schemas can differ by host release. Inspect each live tool's schema before supplying operation names,
 budget/tag fields or reminder payloads; the bold tool names and required behaviors above are fixed.

@@ -42,4 +42,8 @@ halt dispatch and withhold all merge authorization.
 ## Output
 
 Each Task returns the matching stage schema. The foreman persists state.json and reports next human action.
+On done/failed (including stop), first persist terminal state, close/cancel Tasks and cancel any configured
+reminders. Post a final short summary comment, then finish the conversation with a final report; do not wait
+idle. Never finish before terminal persistence succeeds. Later relay/intake events are no-ops unless a
+human authorizes a new run.
 Host errors/missing resume handles are blocked recovery, never successful completion.

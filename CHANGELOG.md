@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- End the foreman's own session after persisted done/failed state, cleanup and a final summary comment.
 - Add durable Linear foreman, relay and watchdog skills.
 - Add triage, Linear-document spec, build and independent review stages.
 - Define pilot routing, repository gates and human checkpoints.
