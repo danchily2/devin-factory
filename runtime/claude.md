@@ -21,6 +21,11 @@ spec/review follow-ups, using the host's Task resume feature. If Task resume is 
 human recovery; do not silently start another writer. Return the same schemas as Devin.
 Use the conversation/resume handle as state.foreman; do not invent a Devin session id.
 
+Android validation on a host without Android/KVM is manual: ask the operator for a Linux/device runner
+against the exact PR head, reuse that validation context on revisions, and collect the spec's build/on-device
+results and screenshot attachment URLs in the PR and build result. Do not invent platform: linux Task
+support or Devin child handles. Missing, empty or stale evidence remains blocked; review reports a human item.
+
 ## Linear and wake-up differences
 
 Call the Linear MCP get_issue, list_comments, save_comment (with id on updates), save_document

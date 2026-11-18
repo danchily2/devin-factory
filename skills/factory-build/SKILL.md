@@ -21,6 +21,23 @@ description: Implement one approved factory issue on factory branches, return te
 6. Only on a later explicit foreman merge authorization may this same child merge Android under every
    factory-repo-gates condition. Never merge iOS/vmm. Check stop and head/check status immediately beforehand.
 
+## Android validation
+
+For vmm android/ or scarlet-team-c-android, check the host before claiming Android coverage.
+On macOS or without accessible /dev/kvm, start ONE Linux child for the same repo using the runtime adapter;
+do not skip Android or create another build-stage writer. Give it the approved spec and exact PR head SHA
+in a detached checkout: run the Android build and the spec's on-device checks, without commits or pushes.
+Require the runtime's Android JSON contract: result, checks[] and evidence (screenshot attachment URLs).
+Record its handle, repo and tested head immediately in this session and the PR body for recovery/cleanup.
+Reuse the same Android child for revisions; send the new PR head and recheck affected spec cases.
+Never mark Android checks passed without current-head Android child evidence when delegation is required.
+Empty checks/evidence, inaccessible KVM, failed checks or a lost child are blocked/failed with concrete
+blockers, never ready; request recovery rather than silently starting a replacement. On a capable Linux
+host run those checks locally with the same evidence requirements. Cancel the Android child on stop and
+close it at terminal cleanup; keep its handle available to the foreman if this build session is lost.
+Before returning, include the child result, tested SHA, per-check results and screenshot attachment URLs
+in the PR body and map checks/evidence/blockers into schemas/build.json; do not add new top-level fields.
+
 ## Output contract
 
 Return ONLY schemas/build.json JSON, including all PRs and per-repo checks/evidence.

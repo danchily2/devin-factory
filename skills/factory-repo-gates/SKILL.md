@@ -19,6 +19,14 @@ Derive exact local test commands there, not from assumptions about the platform.
 required GitHub checks and UI evidence. Missing tooling, unknown required checks, pending/skipped checks,
 or credentials errors are not a pass. Ask a human rather than relaxing protection or editing CI to pass.
 
+Android code includes vmm android/ and scarlet-team-c-android. On macOS or without accessible /dev/kvm,
+the build child must delegate to ONE Linux child for the same repo (runtime/devin.md), reuse it on revisions,
+and obtain an Android build plus the spec's on-device checks against the exact PR head. Otherwise run
+those checks on the capable Linux host. Require per-check commands/results, tested SHA and screenshot
+attachment URLs in the PR body and build result. Missing, empty or stale Android evidence is not a pass;
+review treats it as a human item. A green JS gate or APK build alone never proves Android runtime behavior.
+Claude uses manually arranged Linux/device validation per runtime/claude.md, not fictitious cloud sessions.
+
 Use branch `factory/<issue-key-lowercase>-<slug>` in each repository. PR title starts with the issue key
 (e.g. `MANM-123: Fix approval action`). PR body links the Linear issue and spec document if present,
 lists acceptance criteria, test results, evidence and known gaps. Reuse the existing issue branch/PR on retry.

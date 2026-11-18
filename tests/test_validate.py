@@ -204,6 +204,42 @@ class SkillPolicyTests(unittest.TestCase):
         for text in (watchdog, relay):
             self.assertIn("devin_session_interact or host equivalent", text)
 
+    def test_android_build_delegates_and_reuses_same_child(self):
+        text = self.skill_text("factory-build")
+        self.assertIn("vmm android/ or scarlet-team-c-android", text)
+        self.assertIn("On macOS or without accessible /dev/kvm, start ONE Linux child for the same repo", text)
+        self.assertIn("exact PR head SHA", text)
+        self.assertIn("Reuse the same Android child for revisions", text)
+        self.assertIn("Cancel the Android child on stop", text)
+        self.assertIn("map checks/evidence/blockers into schemas/build.json", text)
+
+    def test_android_empty_and_error_evidence_cannot_pass(self):
+        text = self.skill_text("factory-build")
+        self.assertIn("Never mark Android checks passed without current-head Android child evidence", text)
+        self.assertIn("Empty checks/evidence, inaccessible KVM, failed checks or a lost child", text)
+        self.assertIn("never ready", text)
+        gates = self.skill_text("factory-repo-gates")
+        self.assertIn("Missing, empty or stale Android evidence is not a pass", gates)
+        review = self.skill_text("factory-review")
+        self.assertIn("Missing, empty, inaccessible or stale Android evidence is a human item, never accept", review)
+
+    def test_android_runtime_contract_and_manual_claude_fallback(self):
+        runtime = MODULE_PATH.parents[1] / "runtime"
+        text = (runtime / "devin.md").read_text(encoding="utf-8")
+        self.assertIn('**platform: "linux"**', text)
+        self.assertIn("notify_on_response=true", text)
+        self.assertIn("not a new state.children key", text)
+        schema = json.loads(text.split("```json\n", 1)[1].split("```", 1)[0])
+        self.assertEqual(schema["required"], ["result", "checks", "evidence"])
+        self.assertIn("head_sha", schema["properties"]["checks"]["items"]["required"])
+        passed = schema["allOf"][0]["then"]["properties"]
+        self.assertEqual(passed["checks"]["minItems"], 1)
+        self.assertEqual(passed["checks"]["items"]["properties"]["result"]["const"], "passed")
+        self.assertEqual(passed["evidence"]["minItems"], 1)
+        self.assertEqual(schema["properties"]["evidence"]["items"]["format"], "uri")
+        claude = (runtime / "claude.md").read_text(encoding="utf-8")
+        self.assertIn("Android validation on a host without Android/KVM is manual", claude)
+
 
 if __name__ == "__main__":
     unittest.main()

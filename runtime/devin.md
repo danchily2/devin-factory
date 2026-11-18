@@ -34,6 +34,54 @@ budget/tag fields or reminder payloads; the bold tool names and required behavio
 If a capability is unavailable, report the missing capability and block instead of inventing a successful call.
 No Devin integration is invoked merely by installing the plugin.
 
+## Linux Android child
+
+For routed vmm android/ or scarlet-team-c-android on macOS or without accessible /dev/kvm, the build child
+uses **devin_session_create** with **platform: "linux"**, the same repo, **notify_on_response=true**, tags
+`factory` and `factory:<ISSUE-KEY>`, and a budget within the approved build/run remainder. Create ONE child
+for that repo, not a second implementation writer. Inspect the live schema for repo/limit field names.
+Prompt it to fetch the exact PR head SHA in a detached checkout, verify KVM, run repo Android build gates
+and every spec on-device case, and attach screenshots. No source edits, commits, pushes or merge authority.
+Set **structured_output_schema** to this parsed JSON object:
+
+```json
+{
+  "type": "object", "additionalProperties": false,
+  "required": ["result", "checks", "evidence"],
+  "properties": {
+    "result": {"type": "string", "enum": ["passed", "failed", "unavailable"]},
+    "checks": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["command", "result", "head_sha", "evidence"],
+      "properties": {
+        "command": {"type": "string", "minLength": 1},
+        "result": {"type": "string", "enum": ["passed", "failed", "unavailable"]},
+        "head_sha": {"type": "string", "minLength": 1},
+        "evidence": {"type": "string", "minLength": 1}
+      }
+    }},
+    "evidence": {"type": "array", "items": {"type": "string", "format": "uri"}}
+  },
+  "allOf": [{
+    "if": {"properties": {"result": {"const": "passed"}}},
+    "then": {"properties": {
+      "checks": {"minItems": 1, "items": {"properties": {"result": {"const": "passed"}}}},
+      "evidence": {"minItems": 1}
+    }}
+  }]
+}
+```
+
+Persist its handle/repo/head in the build session and PR body, not a new state.children key. Use
+**devin_session_interact** to reuse the same Android child on revisions and to retrieve/validate results;
+never infer completion from a notification. Reject results for another head and non-attachment evidence
+URLs; verify all spec cases are covered. Missing/empty evidence or tooling failure is blocked/failed,
+not passed. Map checks to schemas/build.json checks (put head SHA in each evidence string), screenshot
+URLs to evidence, and failure/unavailable details to blockers; also record the child result in the PR body
+and build summary. A capable Linux build host may run the checks itself with the same head/evidence gates.
+Propagate stop/terminal cleanup to the Android child. If its parent is lost, the foreman uses the recorded
+handle to cancel it; require recovery authorization before replacing a lost child. Claude validation is manual.
+
 ## Linear native MCP
 
 Use the Linear MCP operations named **get_issue**, **list_comments**, **save_comment**, **save_document**,
