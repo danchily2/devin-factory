@@ -101,6 +101,11 @@ Repository branch protection is authoritative.
 
 A2/A3 use **message_session** with **auto_create: true**, one standing Lite dispatcher per automation.
 Each event re-reads Linear, relays to the foreman and returns to waiting; signals do not spawn new relays.
+For a stuck nonterminal issue, a human adds Factory signal › answered (or any human signal): A2 messages
+the live owner or starts a fresh foreman from state when the owner is verified finished/unreachable.
+answered with no pending question is a nudge/resume, not approval. Uncertain liveness or missing state
+blocks recovery; terminal done/failed stays a no-op. Foreman human-facing checkpoint/status comments include:
+"Stuck for a few hours? Add Factory signal › answered to nudge."
 
 The automations directory contains JSON **drafts**, not installed automations. Inspect the current
 **devin_automation_manage** schema, translate condition/action syntax if necessary, substitute all

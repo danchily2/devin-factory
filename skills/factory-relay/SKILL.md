@@ -19,15 +19,18 @@ One-shot mode (Claude/manual invocation) handles one event and exits.
    intake: report missing state; do not silently start a pipeline. done/failed states are no-ops.
 4. Check foreman liveness with the runtime. Waiting is live. Message the existing foreman with event identity,
    issue key and a request to re-read Linear/GitHub. On uncertain liveness, do not duplicate it.
-5. Only when verified finished/gone, start one fresh factory-foreman with issue and "resume from state";
-   require it to recheck ownership. Do not rewrite state ownership yourself.
+5. For any human signal on a nonterminal issue whose foreman is verified finished/unreachable, start ONE
+   fresh factory-foreman with issue, event identity and "resume from state"; do the same for a verified merge
+   event with a finished/unreachable owner. Require it to recheck ownership; never rewrite ownership yourself.
+   answered with no pending question is a valid nudge/resume signal, not an invalid-stage signal or approval.
+   Wake/resume before applying signal semantics; approve/revise/stop still retain their foreman stage rules.
 6. Never consume signals, update Factory state/status, approve, dispatch stages or merge.
    Duplicate events are harmless nudges, not permission to repeat a transition.
 
 ## Output contract
 
 Report {issue, action: notified|resumed|ignored|blocked, foreman, reason} as JSON for each event.
-No matching input -> ignored; malformed state or inaccessible owner -> blocked with actual error.
+No matching input -> ignored; malformed state or uncertain liveness -> blocked with actual error.
 Dispatcher: after every result return to waiting for the next message, not session termination, even when
 the issue is done/failed. Foreman terminal shutdown does not apply to the dispatcher.
 One-shot: after reporting, end your own session via the supported end/terminate operation using

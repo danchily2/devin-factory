@@ -20,6 +20,9 @@ Replace only the Factory child; preserve unrelated labels.
 The single-select **Factory signal** group has children `approve`, `answered`, `revise`, `stop`.
 Only humans add these. The foreman reads and removes them, never adds one. Relays do not consume signals.
 Use label/event identity and timestamp when available to distinguish repeated uses of the same signal.
+answered supplies a pending question's answer; with no pending question it is a valid nudge/resume at any
+nonterminal stage, not approval. Any human signal may wake/resume a verified finished/unreachable owner;
+only the foreman applies stage-specific semantics. A nudge never bypasses unanswered questions or gates.
 
 Never add workflow states. Existing states are Backlog, Todo, In Progress, In Review, Done, Canceled, Duplicate.
 Map triage/spec/spec-review to Todo; build to In Progress; review/human-review to In Review;
@@ -31,7 +34,7 @@ An externally Canceled or Duplicate issue must not be built or merged; ask for h
 
 Use get_issue plus **all pages** of list_comments. Locate the one body beginning exactly
 `<!-- factory-state -->`. Create it only if none exists; otherwise update with save_comment **with its id**.
-Foremen resolve multiple matching comments with the claim tie-break below; relays/watchdog block and report.
+Foremen resolve multiple matching comments with the claim tie-break below; relays block and report.
 Invalid JSON or unsupported versions are a blocking integrity error: report to a human; do not guess or
 overwrite. The body is the marker then a fenced JSON block, e.g.:
 

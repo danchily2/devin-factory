@@ -8,13 +8,13 @@ import re
 import sys
 
 SKILLS = {
-    "factory-foreman", "factory-relay", "factory-watchdog", "factory-triage",
+    "factory-foreman", "factory-relay", "factory-triage",
     "factory-spec", "factory-build", "factory-review", "factory-linear-state",
     "factory-repo-gates",
 }
 SCHEMAS = {"triage", "spec", "build", "review", "state"}
 AUTOMATIONS = {
-    "A1-intake", "A2-signal", "A3-merged-pr", "A4-watchdog",
+    "A1-intake", "A2-signal", "A3-merged-pr",
 }
 DRAFT_07 = "http://json-schema.org/draft-07/schema#"
 

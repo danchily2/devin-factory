@@ -21,7 +21,7 @@ devin plugins install --local /path/to/devin-factory
 
 Devin loads the Claude plugin layout. In cloud, make this repository's skills available through your
 organization's plugin/skill installation and invoke `@skills:factory-foreman` with the issue key.
-Confirm all nine skills are visible before enabling automations. Devin uses its **native integrations**,
+Confirm all eight skills are visible before enabling automations. Devin uses its **native integrations**,
 not .mcp.json. It needs session create/interact, reminders, Linear and GitHub permissions.
 See [runtime/devin.md](runtime/devin.md) for exact tool mapping.
 
@@ -91,8 +91,13 @@ Do not manually duplicate/delete it. Full shape: [schemas/state.json](schemas/st
 7. Once all recorded PRs are verified merged, the foreman marks Factory done / workflow Done.
    A closed-unmerged PR is not completion.
 
-Signals are stage-specific: approve at spec-review/human-review, answered at blocked, revise at
-spec-review/human-review; invalid-stage signals are explained and removed, not treated as approval.
+Signals are stage-specific: approve at spec-review/human-review, revise at spec-review/human-review.
+answered supplies a pending question's answer or, with no pending question, nudges/resumes the current stage
+without approving anything. Invalid-stage approve/revise signals are explained and removed, not approval.
+Stuck for a few hours? Add Factory signal › answered to nudge.
+Any human signal wakes the owner or restarts a verified finished/unreachable foreman from nonterminal state;
+it does not bypass checkpoints, missing answers or failing gates. Re-add answered after it has been consumed
+for another nudge. For Claude, also manually resume the foreman conversation.
 If an issue is Canceled/Duplicate or state ownership is ambiguous, work blocks for human direction.
 For a failed/done run request explicit operator recovery/new-run authorization; re-adding intake does not
 silently erase prior history. Tool failures and missing child handles are surfaced, not papered over.
@@ -117,7 +122,6 @@ Exact commands/required checks are discovered from each target repo, not guessed
 | A1 | linear:label_added intake, MANM only | foreman |
 | A2 | linear:label_added approve/answered/revise/stop, MANM only | standing Lite dispatcher |
 | A3 | github:pull_request closed+merged, head begins factory/ | standing Lite dispatcher |
-| A4 | hourly UTC, nonterminal Factory state stale >6h | Lite watchdog |
 
 A2/A3 use message_session with auto_create: true, one dispatcher per automation, re-reading Linear for
 each event and returning to waiting. EMPM remains supported by skills but is not opted into A1/A2 drafts.
@@ -137,7 +141,6 @@ See [automations/README.md](automations/README.md). No production setup was perf
 | --- | --- |
 | [factory-foreman](skills/factory-foreman/SKILL.md) | Durable issue owner and checkpoints |
 | [factory-relay](skills/factory-relay/SKILL.md) | Signal/merge wake-up and safe owner recovery |
-| [factory-watchdog](skills/factory-watchdog/SKILL.md) | Stale-state scan and nudges |
 | [factory-triage](skills/factory-triage/SKILL.md) | Size, scope, questions, spec decision |
 | [factory-spec](skills/factory-spec/SKILL.md) | Attached Linear Document spec |
 | [factory-build](skills/factory-build/SKILL.md) | Implementation, gates and PRs |

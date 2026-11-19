@@ -21,6 +21,7 @@ foreman, stage, size, repos, children (triage/spec/build/review), spec_doc, pr, 
 updated_at. See schemas/state.json and factory-linear-state for exact types and update rules.
 pr is a repo-to-PR-URL map so multi-repo issues do not lose merge tracking; spec_doc is a Linear Document URL.
 Normal comments hold stage summaries, decisions, resume targets and human questions.
+Every foreman checkpoint/status comment includes: "Stuck for a few hours? Add Factory signal › answered to nudge."
 The state comment is updated with save_comment id, never replaced with new state comments.
 There is no cross-service transaction/CAS: owner checks, state-first transitions, reconciliation and
 idempotent artifact lookups minimize races, but ambiguous ownership is blocked for human resolution.
@@ -85,14 +86,17 @@ A closed-unmerged PR is not done. Multi-repo runs become done only after every r
   it messages the live owner or starts a fresh foreman only if the owner is verified gone/finished.
 - A3: github:pull_request closed + merged + factory/ head messages its standing Lite dispatcher.
   Resolve the recorded issue; foreman verifies GitHub and all PRs before done/Done.
-- A4: hourly Lite watchdog skips intake/missing state; recovery requires exactly one valid state older
-  than six hours and a verified finished/unreachable owner. It never nudges live owners and ends after reporting.
 - Waiting foreman arms a two-hour devin_reminder_manage reminder as fallback. Child creation uses
   notify_on_response=true, so child results wake it without polling.
 
 A2/A3 use message_session with auto_create: true, one dispatcher per automation, not a new relay per event.
 Dispatchers re-read Linear per event and return to waiting.
 Relays never consume signals; only the foreman records a receipt, removes the label and acts.
+Recovery is human-triggered: add Factory signal › answered (or any human signal) to wake the owner or
+restart a verified finished/unreachable foreman from nonterminal state. With no pending question,
+answered is a nudge/resume signal: reconcile current state and continue, never approve or bypass a gate.
+With a pending question, actual answers are still required. done/failed remains a no-op without new-run
+authorization. Missing state or uncertain liveness blocks recovery; never create a duplicate owner.
 New owners recover child outputs, specs, PRs and review count instead of starting over.
 Partial writes reconcile from state; ambiguous side effects are inspected before retry. A waiting owner is live.
 Missing child/resume capabilities are blocked, not an excuse to duplicate a writer.

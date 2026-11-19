@@ -35,9 +35,9 @@ Use GitHub MCP for PR/check/merge truth and repo-local git for diffs/worktrees.
 Devin automations, session tags/ACU, reminders and cloud session liveness are NOT Claude Code capabilities.
 For a local Claude run, a human reopens/resumes the foreman conversation to relay approve/answered/revise/stop
 or merged PRs; it re-reads Linear before acting. Record this manual wake requirement at every checkpoint.
-There is no unattended two-hour reminder guarantee here: use an explicitly configured external scheduler
-to resume it every two hours, or human wake-ups. The watchdog can be invoked manually in a separate
-conversation, but cannot declare another conversation dead without an operator verifying it.
+There is no unattended two-hour reminder guarantee here. For a stuck nonterminal issue, add
+Factory signal › answered and manually resume the foreman conversation; with no pending question it is
+a nudge to reconcile and continue, not approval. Adding a Linear label alone does not wake local Claude.
 Do not claim parity with cloud relay scheduling when no scheduler is configured.
 
 Checkpoints, max two review rounds, stop behavior, schemas, branch rules and merge restrictions are identical.

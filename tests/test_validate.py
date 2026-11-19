@@ -169,19 +169,41 @@ class SkillPolicyTests(unittest.TestCase):
         path = MODULE_PATH.parents[1] / "skills" / name / "SKILL.md"
         return " ".join(path.read_text(encoding="utf-8").split())
 
-    def test_watchdog_excludes_intake_and_missing_state(self):
-        text = self.skill_text("factory-watchdog")
-        self.assertIn("Always skip Factory › intake, even with state; A1 owns intake.", text)
-        self.assertIn("Skip issues with no state comment: missing state is not stale.", text)
-        self.assertIn("Never start or resume either case.", text)
+    def test_signal_recovery_requires_state_and_verified_finished_owner(self):
+        text = self.skill_text("factory-relay")
+        self.assertIn("For any human signal on a nonterminal issue", text)
+        self.assertIn("foreman is verified finished/unreachable, start ONE fresh factory-foreman", text)
+        self.assertIn('"resume from state"', text)
+        self.assertIn("Waiting is live", text)
+        self.assertIn("On uncertain liveness, do not duplicate it", text)
+        self.assertIn("report missing state; do not silently start a pipeline", text)
+        self.assertIn("done/failed states are no-ops", text)
 
-    def test_watchdog_requires_stale_single_state_and_finished_owner(self):
-        text = self.skill_text("factory-watchdog")
-        self.assertIn("Act only when exactly one valid state comment exists", text)
-        self.assertIn("updated_at is strictly more than six hours old", text)
-        self.assertIn("AND its owner is verified finished/unreachable", text)
-        self.assertIn("skip live owners without nudging them", text)
-        self.assertIn("immediately before recovery; skip if any gate no longer holds", text)
+    def test_answered_nudge_preserves_questions_and_approval_gates(self):
+        relay = self.skill_text("factory-relay")
+        foreman = self.skill_text("factory-foreman")
+        state = self.skill_text("factory-linear-state")
+        self.assertIn("answered with no pending question is a valid nudge/resume signal", relay)
+        self.assertIn("answered with no pending question is a valid nudge/resume", foreman)
+        self.assertIn("re-read state, issue, children and PRs", foreman)
+        self.assertIn("without repeating completed work", foreman)
+        self.assertIn("missing answers stay blocked", foreman)
+        self.assertIn("Record/consume the nudge normally; it never approves", foreman)
+        self.assertIn("Invalid-stage approve/revise signals", foreman)
+        self.assertIn("at any nonterminal stage", foreman)
+        self.assertIn("valid nudge/resume at any nonterminal stage, not approval", state)
+
+    def test_foreman_comments_include_nudge_hint(self):
+        text = self.skill_text("factory-foreman")
+        self.assertIn("In every human-facing checkpoint/status comment include this line verbatim", text)
+        self.assertIn("Stuck for a few hours? Add Factory signal › answered to nudge.", text)
+
+    def test_three_automation_drafts_and_eight_skills(self):
+        root = MODULE_PATH.parents[1]
+        self.assertEqual(validator.AUTOMATIONS, {"A1-intake", "A2-signal", "A3-merged-pr"})
+        self.assertEqual({p.stem for p in (root / "automations").glob("*.json")}, validator.AUTOMATIONS)
+        self.assertEqual(len(validator.SKILLS), 8)
+        self.assertEqual({p.parent.name for p in (root / "skills").glob("*/SKILL.md")}, validator.SKILLS)
 
     def test_foreman_and_state_define_losing_claim_cleanup(self):
         for name in ("factory-foreman", "factory-linear-state"):
@@ -195,14 +217,11 @@ class SkillPolicyTests(unittest.TestCase):
                 self.assertIn("post nothing else and end your own session", text)
                 self.assertIn("resume", text)
 
-    def test_one_shot_helpers_end_but_dispatcher_waits(self):
-        watchdog = self.skill_text("factory-watchdog")
+    def test_one_shot_relay_ends_but_dispatcher_waits(self):
         relay = self.skill_text("factory-relay")
-        self.assertIn("end your own one-shot session", watchdog)
         self.assertIn("One-shot: after reporting, end your own session", relay)
         self.assertIn("Dispatcher: after every result return to waiting", relay)
-        for text in (watchdog, relay):
-            self.assertIn("devin_session_interact or host equivalent", text)
+        self.assertIn("devin_session_interact or host equivalent", relay)
 
     def test_android_build_delegates_and_reuses_same_child(self):
         text = self.skill_text("factory-build")
